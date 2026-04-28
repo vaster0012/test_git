@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<!-- DOCTYPE html — говорит браузеру: это HTML5 -->
+
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8">
+  <!-- UTF-8 — кодировка, чтобы работала кириллица -->
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- viewport — страница нормально отображается на любом экране -->
+
+  <title>Hello from Container</title>
+  <!-- title — текст во вкладке браузера -->
+
+  <style>
+    /* style — блок CSS-стилей */
+
+    body {
+      margin: 0;                   /* убираем отступы браузера по умолчанию */
+      background: #111;            /* тёмный фон */
+      color: #eee;                 /* светлый текст */
+      font-family: monospace;      /* моноширинный шрифт, как в терминале */
+      display: flex;               /* flexbox — выравниваем содержимое */
+      justify-content: center;     /* по горизонтали — по центру */
+      align-items: center;         /* по вертикали — по центру */
+      height: 100vh;               /* высота = весь экран (viewport height) */
+    }
+
+    .box {
+      border: 1px solid #444;      /* тонкая рамка вокруг блока */
+      padding: 2rem;               /* внутренний отступ 32px */
+      border-radius: 8px;          /* скруглённые углы */
+      text-align: center;          /* текст по центру */
+    }
+
+    h1 {
+      color: #4caf50;              /* зелёный цвет заголовка */
+      margin-bottom: 0.5rem;       /* отступ снизу */
+    }
+
+    p {
+      color: #aaa;                 /* серый цвет параграфа */
+      margin: 0.25rem 0;           /* маленький отступ сверху и снизу */
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="box">
+    <!-- div.box — блок по центру экрана -->
+
+    <h1>Container is running</h1>
+    <!-- h1 — главный заголовок страницы -->
+
+    <p>hostname: <span id="host">—</span></p>
+    <!-- span#host — сюда JS вставит имя хоста -->
+
+    <p id="time">—</p>
+    <!-- p#time — сюда JS вставит текущее время -->
+  </div>
+
+  <script>
+    // script — блок JavaScript
+
+    document.getElementById('host').textContent = location.hostname;
+    // location.hostname — адрес сервера, на котором открыта страница
+    // textContent — вставляем текст в элемент с id="host"
+
+    function tick() {
+      // tick — функция, которая обновляет время каждую секунду
+
+      document.getElementById('time').textContent = new Date().toLocaleTimeString();
+      // new Date() — текущая дата и время
+      // toLocaleTimeString() — форматирует только время (ЧЧ:ММ:СС)
+    }
+
+    tick();                      // вызываем сразу при загрузке страницы
+    setInterval(tick, 1000);     // повторяем каждые 1000 мс (= 1 секунда)
+  </script>
+
+</body>
+</html>
