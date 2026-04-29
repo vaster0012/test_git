@@ -1,0 +1,30 @@
+
+    /* style — блок CSS-стилей */
+
+    body {
+      margin: 0;                   /* убираем отступы браузера по умолчанию */
+      background: #111;            /* тёмный фон */
+      color: #eee;                 /* светлый текст */
+      font-family: monospace;      /* моноширинный шрифт, как в терминале */
+      display: flex;               /* flexbox — выравниваем содержимое */
+      justify-content: center;     /* по горизонтали — по центру */
+      align-items: center;         /* по вертикали — по центру */
+      height: 100vh;               /* высота = весь экран (viewport height) */
+    }
+
+    .box {
+      border: 1px solid #444;      /* тонкая рамка вокруг блока */
+      padding: 2rem;               /* внутренний отступ 32px */
+      border-radius: 8px;          /* скруглённые углы */
+      text-align: center;          /* текст по центру */
+    }
+
+    h1 {
+      color: #4caf50;              /* зелёный цвет заголовка */
+      margin-bottom: 0.5rem;       /* отступ снизу */
+    }
+
+    p {
+      color: #aaa;                 /* серый цвет параграфа */
+      margin: 0.25rem 0;           /* маленький отступ сверху и снизу */
+    }
