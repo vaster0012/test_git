@@ -3,7 +3,7 @@
 
     body {
       margin: 0;                   /* убираем отступы браузера по умолчанию */
-      background: #111;            /* тёмный фон */
+      background: #112;            /* тёмный фон */
       color: #eee;                 /* светлый текст */
       font-family: monospace;      /* моноширинный шрифт, как в терминале */
       display: flex;               /* flexbox — выравниваем содержимое */
@@ -15,7 +15,7 @@
     .box {
       border: 1px solid #444;      /* тонкая рамка вокруг блока */
       padding: 2rem;               /* внутренний отступ 32px */
-      border-radius: 8px;          /* скруглённые углы */
+      border-radius: 10px;          /* скруглённые углы */
       text-align: center;          /* текст по центру */
     }
 
