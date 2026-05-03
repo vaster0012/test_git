@@ -8,10 +8,10 @@
 
     echo -e "${RED}Тест скрипта проверки здоровья${EC}"
 
-    echo -e "Дата отчета:\n"
+    echo -e "Дата отчета:"
     date
 
-    echo -e "\n uptime: $(uptime | cut -d, -f1 | awk '{print $3}')"
+    echo -e "uptime: $(uptime | cut -d, -f1 | awk '{print $3}')"
 
     #переменная вывода только числа загрузки CPU. Хз для чего, мб потом использую нормально.
     aCPU="$(top -bn1 | grep "%Cpu" | awk '{print $2}')"
@@ -26,12 +26,10 @@
         else echo -e "${GRN}${aCPU} - OK! ${EC}"
     fi 
 
-    echo -e "\n"
     echo -e "${YEL}Проверка памяти${EC}" 
     #Проверка памяти. Может потом можно будет улучшить
     free -h --mega
 
-    echo -e "\n"
     echo -e "${YEL}Проверка дисков${EC}"
     # проверка диска. Только первая строка и vol.
     df -h | grep -iE "^filesystem|^/dev/"
