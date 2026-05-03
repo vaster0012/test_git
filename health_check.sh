@@ -38,4 +38,4 @@
     echo "__________________________"
 } | tee -a ~/log_health.log
 
-echo -e "${RED}Конец. Отправлен в журнал ~/log_health.l${EC}"
+echo -e "\e[31mКонец. Отправлен в журнал ~/log_health.log\e[0m"
