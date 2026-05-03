@@ -1,7 +1,18 @@
 #!/bin/bash
 
-for var in {1..20}
-do echo -e "in $var cycle"
+#перебор чисел, пока не остановится на определенном. while do done
+
+min_num=1
+max_num=9
+step=1
+
+while [ "$min_num" -lt "$max_num" ]
+    do
+        echo "$min_num"
+        min_num=$(( min_num + step ))
 done
 
-echo "final number: $var"
+for num in $(seq 1 1 9)
+    do
+        echo "$num"
+done
