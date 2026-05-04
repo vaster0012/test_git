@@ -20,26 +20,13 @@ if [ -d ${DIR} ]
             then
                 rm -rf "./backup/$(date +%Y)/${DIR}-$(date +%d.%m).tar.gz"
                 tar -czvf "./backup/$(date +%Y)/${DIR}-$(date +%d.%m).tar.gz" "${DIR}"
-                echo -e "Rewrite ARCHIVE: ${DIR}-$(date +%d.%m).tar.gz" | tee ./backup/tar.log
-                echo -e "\e[0m Archive is rewrite!"
+                echo -e "Rewrite ARCHIVE: ${DIR}-$(date +%d.%m).tar.gz" | tee -a ./backup/tar$(date +%Y).log
+                echo -e "Archive is rewrite! \e[0m"
             else
                 tar -czvf "./backup/$(date +%Y)/${DIR}-$(date +%d.%m).tar.gz" "${DIR}"
-                echo -e "Create ARCHIVE: ${DIR}-$(date +%d.%m).tar.gz" | tee ./backup/tar.log
+                echo -e "Create ARCHIVE: ${DIR}-$(date +%d.%m).tar.gz" | tee -a ./backup/tar$(date +%Y).log
         fi  
     else
     echo "${DIR} - not found or is not a directory"  
 fi
-
-
-
-echo " directive: ${DIR} "
-
-
-
-
-
-
-#case "$1" in
-#    -d echo Direcory
-#    echo $1 not a supported
-#esac
+echo -e " directive \e[33m${DIR}\e[0m: end of archiving "
