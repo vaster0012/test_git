@@ -1,0 +1,10 @@
+zero
+one
+two
+free
+four
+five
+six
+seven
+eith
+nine
