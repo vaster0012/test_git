@@ -1,6 +1,6 @@
-#!/bin/bash
-#./site.txt 
-    #colors
+#!/bin/bash 
+
+#colors
 RED="\e[31m"   # Красный цвет текста
 GRN="\e[32m"   # Зелёный цвет текста
 YEL="\e[33m"   # Жёлтый цвет текста
@@ -11,12 +11,14 @@ printf "${GRN}Мониторинг сайтов${EC}\n"
 
 monitor () {
     local SITE=${1:-$DEF_SITE}
-        if [ -s "SITE" ]
+        if [ -s "$SITE" ]
         then
             printf "${GRN}OK${EC}. Cheking list\n"
-            cat site.txt | column -t -s "//" | awk '{print $2}' || echo "nofile"
+            cat ${SITE} | column -t -s "//" | awk '{print $2}' || echo "nofile"
+            printf "${GRN}OK. END listing${EC}\n" # change later
         else
             printf "File doesn't exist or is empty\n"
+            printf "The $SITE has been created, but it is empty. Please fill it out\n"
             touch "${SITE}"
             exit 0
     fi
@@ -24,25 +26,23 @@ monitor () {
     while IFS= read -r LINK
     do
         [[ -z "$LINK" || "$LINK" == \#* ]] && continue
-        CLEAN_LINK=$(echo "$LINK" | sed 's|https\?://||' | sed 's|/.*||')
-        if ping -c 1 -w 2 $CLEAN_LINK > /dev/null 2>&1
+        CODE=$(curl -o /dev/null -s -m 3 -w "%{http_code}" "$LINK")
+        if [ "$CODE" -ge 200 ] && [ "$CODE" -lt 400 ]
             then
-                curl -o dev/null -sm 3 -w "%{http_code}" "$LINK"
-                printf "     ${GRN}OK${EC} $LINK\n"
+                printf "${GRN}OK${EC} $LINK (HTTP $CODE)\n"
             else
-                curl -o dev/null -sm 3 -w "%{http_code}" "$LINK"
-                printf "     ${RED}FAIL${EC} $LINK\n"
+                printf "${RED}FAIL${EC} $LINK (HTTP $CODE)\n"
         fi
-    done < SITE
+    done < "$SITE"
 }
 
-while getopts "fh:" opt
+while getopts "f:h" opt
 do
     case "$opt" in
         f) U_SITE=$OPTARG
            touch ${U_SITE} 
-           monitor "U_SITE"
-        h) echo "add the key -f <NAME> to create or specify the file "
+           monitor "$U_SITE" ;;
+        h) echo "add the key -f <NAME> to create or specify the file " ;;
         *) echo "Unsupported key. Running without flags" ;;
     esac
 done
@@ -52,5 +52,3 @@ then
     printf "${YEL}No flags. Use default:${GRN}./site.txt ${EC}\n"
     monitor
 fi
-
-
