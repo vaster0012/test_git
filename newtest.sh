@@ -5,20 +5,19 @@ RED="\e[31m"   # Красный цвет текста
 GRN="\e[32m"   # Зелёный цвет текста
 YEL="\e[33m"   # Жёлтый цвет текста
 EC="\e[0m"     # Сброс цвета
+DEF_SITE="./site.txt" # стандартный файл
 
-printf "Мониторинг сайтов\n"
+printf "${GRN}Мониторинг сайтов${EC}\n"
 
-monitor
-{
+monitor () {
+    local SITE=${1:-$DEF_SITE}
         if [ -s "SITE" ]
         then
-            printf "${GRN}OK${EC}. Cheking list\n" #change
+            printf "${GRN}OK${EC}. Cheking list\n"
             cat site.txt | column -t -s "//" | awk '{print $2}' || echo "nofile"
         else
-            printf "File doesn't exist or is empty\n" #change
-            printf "Create site.txt\n"
-            printf "Please! Input site in site!))\n"
-            touch ./site.txt #change
+            printf "File doesn't exist or is empty\n"
+            touch "${SITE}"
             exit 0
     fi
 
@@ -34,14 +33,15 @@ monitor
                 curl -o dev/null -sm 3 -w "%{http_code}" "$LINK"
                 printf "     ${RED}FAIL${EC} $LINK\n"
         fi
-    done < "./site.txt"
+    done < SITE
 }
 
 while getopts "fh:" opt
 do
     case "$opt" in
-        f) SITE=$OPTARG
-            touch ${SITE} 
+        f) U_SITE=$OPTARG
+           touch ${U_SITE} 
+           monitor "U_SITE"
         h) echo "add the key -f <NAME> to create or specify the file "
         *) echo "Unsupported key. Running without flags" ;;
     esac
@@ -50,7 +50,7 @@ done
 if [ $OPTIND -eq 1 ]
 then
     printf "${YEL}No flags. Use default:${GRN}./site.txt ${EC}\n"
-    run
+    monitor
 fi
 
 
