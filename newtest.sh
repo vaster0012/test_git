@@ -27,16 +27,16 @@ monitor () {
             touch "${SITE}"
             exit 0
     fi
-
+    printf "\n=== $(date) ===\n" | tee -a "./smonitor.log"
     while IFS= read -r LINK
     do
         [[ -z "$LINK" || "$LINK" == \#* ]] && continue
         CODE=$(curl -o /dev/null -s -m 3 -w "%{http_code}" "$LINK")
         if [ "$CODE" -ge 200 ] && [ "$CODE" -lt 400 ]
             then
-                printf "${GRN}OK${EC} $LINK (HTTP $CODE)\n"
+                printf "${GRN}OK${EC} $LINK (HTTP $CODE)\n" | tee -a "./smonitor.log"
             else
-                printf "${RED}FAIL${EC} $LINK (HTTP $CODE)\n"
+                printf "${RED}FAIL${EC} $LINK (HTTP $CODE)\n" | tee -a "./smonitor.log"
         fi
     done < "$SITE"
 }
