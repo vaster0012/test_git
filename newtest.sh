@@ -14,8 +14,13 @@ monitor () {
         if [ -s "$SITE" ]
         then
             printf "${GRN}OK${EC}. Cheking list\n"
-            cat ${SITE} | column -t -s "//" | awk '{print $2}' || echo "nofile"
-            printf "${GRN}OK. END listing${EC}\n" # change later
+            if ping -c 1 -w 2 8.8.8.8 > /dev/null 2>&1; then 
+                    printf "${GRN}CONNECTED${EC}\n" # change later
+                    #cat ${SITE} | column -t -s "//" | awk '{print $2}' || echo "nofile"
+                else
+                    printf "${RED}NOT CONNECTED!${EC}\n" # change later    
+                    exit 1
+            fi
         else
             printf "File doesn't exist or is empty\n"
             printf "The $SITE has been created, but it is empty. Please fill it out\n"
