@@ -19,7 +19,7 @@ done
 
 if [ -s "./site.txt" ]
     then
-        printf "OK. Cheking list\n" #change
+        printf "${GRN}OK${EC}. Cheking list\n" #change
         cat site.txt | column -t -s "//" | awk '{print $2}' || echo "nofile"
     else
         printf "File doesn't exist or is empty\n" #change
@@ -35,9 +35,11 @@ do
     CLEAN_LINK=$(echo "$LINK" | sed 's|https\?://||' | sed 's|/.*||')
     if ping -c 1 -w 2 $CLEAN_LINK > /dev/null 2>&1
         then
-            printf "OK $LINK\n"
+            curl -o dev/null -sm 3 -w "%{http_code}" "$LINK"
+            printf "     ${GRN}OK${EC} $LINK\n"
         else
-            printf "FAIL $LINK\n"
+            curl -o dev/null -sm 3 -w "%{http_code}" "$LINK"
+            printf "     ${RED}FAIL${EC} $LINK\n"
     fi
 done < "./site.txt"
 
