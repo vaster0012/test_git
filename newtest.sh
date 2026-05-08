@@ -44,7 +44,7 @@ monitor () {
 one_site () {
     local LINK=$1 
     printf "\n=== $(date) ===\n" | tee -a "./smonitor.log"
-    printf "Test one site - $LINK\n"
+    printf "Test single site - $LINK\n" | tee -a "./smonitor.log"
 
     RESULT=$(curl -o /dev/null -s -m 3 -w "%{http_code} %{time_total}" "$LINK")
     CODE=$(echo "$RESULT" | awk '{print $1}')
