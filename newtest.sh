@@ -6,7 +6,6 @@ GRN="\e[32m"   # Зелёный цвет текста
 YEL="\e[33m"   # Жёлтый цвет текста
 EC="\e[0m"     # Сброс цвета
 DEF_SITE="./site.txt" # стандартный файл
-DEF_LINK="8.8.8.8"
 
 printf "${GRN}Мониторинг сайтов${EC}\n"
 
@@ -15,7 +14,7 @@ monitor () {
         if [ -s "$SITE" ]
         then
             printf "${GRN}OK${EC}. Cheking list\n"
-            if ping -c 1 -w 2 $DEF_LINK > /dev/null 2>&1; then 
+            if ping -c 1 -w 2 8.8.8.8 > /dev/null 2>&1; then 
                     printf "${GRN}CONNECTED${EC}\n" # change later
                     #cat ${SITE} | column -t -s "//" | awk '{print $2}' || echo "nofile"
                 else
@@ -43,17 +42,16 @@ monitor () {
 }
 
 one_site () {
-    local LINK=${1:-$DEF_LINK}
-
+    local LINK=$1 
     printf "\n=== $(date) ===\n" | tee -a "./smonitor.log"
-    printf "Test one site - $LINK"
+    printf "Test one site - $LINK   "
 
     CODE=$(curl -o /dev/null -s -m 3 -w "%{http_code}" "$LINK")
     if [ "$CODE" -ge 200 ] && [ "$CODE" -lt 400 ]
         then
-            printf "${GRN}OK${EC} $LINK (HTTP $CODE)\n" | tee -a "./smonitor.log"
+            printf "${GRN}OK${EC} (HTTP $CODE)\n" | tee -a "./smonitor.log"
         else
-            printf "${RED}FAIL${EC} $LINK (HTTP $CODE)\n" | tee -a "./smonitor.log"
+            printf "${RED}FAIL${EC} (HTTP $CODE)\n" | tee -a "./smonitor.log"
     fi
 
 }
@@ -71,7 +69,7 @@ help_page () {
 
 }
 
-while getopts "f:hs" opt
+while getopts "f:hs:" opt
 do  
     if [ -n "$FLAG"  ] 
         then 
@@ -86,8 +84,8 @@ do
         h)  FLAG=h
             help_page ;;
         s)  FLAG=s
-            L_SITE=$OPTARG
-            one_site "$L_SITE" ;;
+            LINK=$OPTARG
+            one_site "$LINK" ;;
         *)  echo "Unsupported key. Running without flags" ;;
     esac
 done

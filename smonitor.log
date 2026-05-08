@@ -68,3 +68,18 @@
 
 === Fri May  8 21:14:29 UTC 2026 ===
 [31mFAIL[0m 8.8.8.8 (HTTP 000)
+
+=== Fri May  8 21:15:38 UTC 2026 ===
+[31mFAIL[0m  (HTTP 000)
+
+=== Fri May  8 21:15:45 UTC 2026 ===
+[31mFAIL[0m  (HTTP 000)
+
+=== Fri May  8 21:17:42 UTC 2026 ===
+[32mOK[0m https://ya.ru/ (HTTP 302)
+
+=== Fri May  8 21:18:43 UTC 2026 ===
+[32mOK[0m https://ya.ru/ (HTTP 302)
+
+=== Fri May  8 21:20:17 UTC 2026 ===
+[32mOK[0m (HTTP 302)
