@@ -44,20 +44,17 @@ monitor () {
 
 one_site () {
     local LINK=${1:-$DEF_LINK}
+
     printf "\n=== $(date) ===\n" | tee -a "./smonitor.log"
     printf "Test one site - $LINK"
-    while IFS= read -r LINK
-    do
-        [[ -z "$LINK" || "$LINK" == \#* ]] && continue
-        CODE=$(curl -o /dev/null -s -m 3 -w "%{http_code}" "$LINK")
-        if [ "$CODE" -ge 200 ] && [ "$CODE" -lt 400 ]
-            then
-                printf "${GRN}OK${EC} $LINK (HTTP $CODE)\n" | tee -a "./smonitor.log"
-            else
-                printf "${RED}FAIL${EC} $LINK (HTTP $CODE)\n" | tee -a "./smonitor.log"
-        fi
-    done < "$SITE"
 
+    CODE=$(curl -o /dev/null -s -m 3 -w "%{http_code}" "$LINK")
+    if [ "$CODE" -ge 200 ] && [ "$CODE" -lt 400 ]
+        then
+            printf "${GRN}OK${EC} $LINK (HTTP $CODE)\n" | tee -a "./smonitor.log"
+        else
+            printf "${RED}FAIL${EC} $LINK (HTTP $CODE)\n" | tee -a "./smonitor.log"
+    fi
 
 }
 
@@ -67,14 +64,14 @@ help_page () {
     printf "\n Скрипт позволяет просто пингануть сайты "
     printf "\n Флаги: "
     printf "\n -h --- Помощь "
-    printf "\n -f --- Задать свой файл дял проверки "
-    printf "\n -s --- Задать только сайт для проверки П.с. Работает пока криво \n"
+    printf "\n -f <путь> --- Задать свой файл дял проверки "
+    printf "\n -s <сайт> --- Задать только сайт для проверки П.с. Работает пока криво\n"
     printf "\n Просьба использовать только один флаг "
     printf "\n Это все тесты, если вдруг кто-то это увидит, простите, что увидели! \n"
 
 }
 
-while getopts "f:hs:" opt
+while getopts "f:hs" opt
 do  
     if [ -n "$FLAG"  ] 
         then 
@@ -89,8 +86,8 @@ do
         h)  FLAG=h
             help_page ;;
         s)  FLAG=s
-            L_SITE=$OPTARG 
-            one_site "L_SITE" ;;
+            L_SITE=$OPTARG
+            one_site "$L_SITE" ;;
         *)  echo "Unsupported key. Running without flags" ;;
     esac
 done
