@@ -44,14 +44,31 @@ monitor () {
 one_site () {
     local LINK=$1 
     printf "\n=== $(date) ===\n" | tee -a "./smonitor.log"
-    printf "Test one site - $LINK   "
+    printf "Test one site - $LINK\n"
 
-    CODE=$(curl -o /dev/null -s -m 3 -w "%{http_code}" "$LINK")
+    RESULT=$(curl -o /dev/null -s -m 3 -w "%{http_code} %{time_total}" "$LINK")
+    CODE=$(echo "$RESULT" | awk '{print $1}')
+    TIME_MS=$(echo "$(echo "$RESULT" | awk '{print $2}') * 1000 / 1" | bc)
+
+    CLEAN=$(echo "$LINK" | sed 's|https\?://||' | sed 's|/.*||')
+
     if [ "$CODE" -ge 200 ] && [ "$CODE" -lt 400 ]
         then
-            printf "${GRN}OK${EC} (HTTP $CODE)\n" | tee -a "./smonitor.log"
+            printf "${GRN}OK${EC} (HTTP $CODE) Response: ${TIME_MS}ms\n" | tee -a "./smonitor.log"
         else
-            printf "${RED}FAIL${EC} (HTTP $CODE)\n" | tee -a "./smonitor.log"
+            printf "${RED}FAIL${EC} (HTTP $CODE) Response: ${TIME_MS}ms\n" | tee -a "./smonitor.log"
+    fi
+
+    # Проверка порта
+    nc -zw 3 "$CLEAN" 443 > /dev/null 2>&1
+    if [ $? -eq 0 ]
+        then printf "        PORT 443: ${GRN}OPEN${EC}\n"
+        else printf "        PORT 443: ${RED}CLOSED${EC}\n"
+    fi
+    nc -zw 3 "$CLEAN" 80  > /dev/null 2>&1
+    if [ $? -eq 0 ]
+        then printf "        PORT 80:  ${GRN}OPEN${EC}\n"
+        else printf "        PORT 80:  ${RED}CLOSED${EC}\n"
     fi
 
 }
