@@ -41,9 +41,9 @@ monitor () {
     done < "$SITE"
 }
 
-while getopts "f:h" opt
-do
-    case "$opt" in
+while getopts "f:h" opt   #СДЕЛАТЬ ПРОВЕРКУ ОДНОГО САЙТА ПО КЛЮЧУ И ЕГО параметру. А так же можно улучшить
+do                        #проверяя дополнительные параметры
+    case "$opt" in        #например: ... (пока хз)
         f) U_SITE=$OPTARG
            touch ${U_SITE} 
            monitor "$U_SITE" ;;
