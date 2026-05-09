@@ -16,20 +16,26 @@ printf "....  Setup bootstrap Vaster "
 printf "....  Updating and installing customized packages  ....\n"
 printf "\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/ ${EC}"
 
+printf "${ST} A temporary file has been created"
 dpkg-query -W -f='${Package}\n' > allinst.tmp
 
-
-
+if [ -s ./packages.txt ]
+    then
+        printf "${ST} The ${YEL}packages.txt${EC} exists. Overwriting it"
+        rm -f ./packages.txt
+        curl -s -L -o ./packages.txt "https://raw.githubusercontent.com/vaster0012/test_git/refs/heads/main/packages.txt"
+    else
+        printf "${ST} No ${YEL}packages.txt${EC}. Download"
+        curl -s -L -o ./packages.txt "https://raw.githubusercontent.com/vaster0012/test_git/refs/heads/main/packages.txt"
+fi
 check_all_installed () {
     printf "${ST} Chek ...  "
 
-while read -r APTIN; do
-    echo "Строка: $APTIN"
+    #while read -r APTIN; do
+    #    echo "Строка: $APTIN"
 
 
-done < packages.txt
-
-
+    #done < packages.txt
 
 }
 
@@ -67,4 +73,5 @@ case "$FLAG" in
 esac
 
 shift $((OPTIND - 1))
+rm -f allinst.tmp
 printf "\n"
