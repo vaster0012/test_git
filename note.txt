@@ -81,26 +81,12 @@ Shebang + переменные цветов #!/bin/bash
 
 
 
-FLAG=""
-while getopts "hau" opt; do
-    if [[ -n "$FLAG" ]]; then
-        printf "${ST}Error: flag -%s conflicts with already used -%s\n" "$opt" "$FLAG"
-        exit 1
-    fi
-    case "$opt" in
-        h) FLAG="h" ;;
-        a) FLAG="a" ;;
-        u) FLAG="u" ;;
-        *) printf "${ST}Unsupported key. Open help\n"
-           help_page
-           exit 1 ;;
-    esac
+for entry in $(cat /etc/passwd)
+do
+echo "Values in $entry –"
+IFS=:
+for value in $entry
+do
+echo " $value"
 done
-
-case "$FLAG" in
-    h) help_page ;;
-    a) check_all_installed ;;
-    u) printf "Update not implemented yet\n" ;;
-esac
-
-shift $((OPTIND - 1))
+done

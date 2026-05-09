@@ -8,21 +8,26 @@ YEL="\e[33m"   # Жёлтый цвет текста
 EC="\e[0m"     # Сброс цвета
 
 # Оформление начала строк
-ST="\n${YEL}|${EC}" # Обычный ход программы
-EST="\n${RED}|${EC}" # Ошибка или предупреждение
-
-
-
+ST=$'\n'"${YEL}|${EC}" # Обычный ход программы
+EST=$'\n'"${RED}|${EC}" # Ошибка или предупреждение
 
 printf "\n${YEL}....   ....   ....   ........   ........   ....\n"
 printf "....  Setup bootstrap Vaster "
 printf "....  Updating and installing customized packages  ....\n"
 printf "\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/ ${EC}"
 
+dpkg-query -W -f='${Package}\n' > allinst.tmp
+
+
+
 check_all_installed () {
     printf "${ST} Chek ...  "
 
+while read -r APTIN; do
+    echo "Строка: $APTIN"
 
+
+done < packages.txt
 
 
 
