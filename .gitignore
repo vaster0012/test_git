@@ -1,4 +1,6 @@
 backup/
 *.log
 *.txt 
+*.tmp
+!packages.txt
 !note.txt
