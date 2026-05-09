@@ -8,8 +8,8 @@ YEL="\e[33m"   # Жёлтый цвет текста
 EC="\e[0m"     # Сброс цвета
 
 # Оформление начала строк
-ST=$'\n'"${YEL}|${EC}" # Обычный ход программы
-EST=$'\n'"${RED}|${EC}" # Ошибка или предупреждение
+ST=$'\n'"${YEL}ENV|${EC}" # Обычный ход программы
+EST=$'\n'"${RED}ENV|${EC}" # Ошибка или предупреждение
 
 printf "\n${YEL}....   ....   ....   ........   ........   ....\n"
 printf "....  Setup bootstrap Vaster "
@@ -19,15 +19,15 @@ printf "\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/ ${EC}"
 printf "${ST} A temporary file has been created"
 dpkg-query -W -f='${Package}\n' > allinst.tmp
 
-if [ -s ./packages.txt ]
+if [[ -s ./packages.txt ]]
     then
-        printf "${ST} The ${YEL}packages.txt${EC} exists. Overwriting it"
-        rm -f ./packages.txt
-        curl -s -L -o ./packages.txt "https://raw.githubusercontent.com/vaster0012/test_git/refs/heads/main/packages.txt"
+        printf "${ST} ${YEL}packages.txt${EC} exists, overwriting...\n"
     else
-        printf "${ST} No ${YEL}packages.txt${EC}. Download"
-        curl -s -L -o ./packages.txt "https://raw.githubusercontent.com/vaster0012/test_git/refs/heads/main/packages.txt"
+        printf "${ST} ${YEL}packages.txt${EC} not found, downloading...\n"
 fi
+
+curl -s -L -o ./packages.txt "https://raw.githubusercontent.com/vaster0012/test_git/refs/heads/main/packages.txt"
+
 check_all_installed () {
     printf "${ST} Chek ...  "
 
@@ -62,6 +62,7 @@ while getopts "hau" opt; do
         u) FLAG="u" ;;
         *) printf "${EST}Unsupported key. Open help\n"
            help_page
+           rm -f allinst.tmp
            exit 1 ;;
     esac
 done
@@ -69,9 +70,12 @@ done
 case "$FLAG" in
     h) help_page ;;
     a) check_all_installed ;;
-    u) printf "not ready ....\n" ;;
+    u) printf "${EST}not ready ....\n" ;;
 esac
 
 shift $((OPTIND - 1))
+
+trap '$(rm -f allinst.tmp)' ERR
 rm -f allinst.tmp
+
 printf "\n"
