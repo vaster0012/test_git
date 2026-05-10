@@ -94,3 +94,13 @@ do
 echo " $value"
 done
 done
+
+
+тихая установка пакетов
+    apt-get update &>/dev/null
+    if apt-get -y -qq install "$pkg" &>/dev/null
+        then
+            echo "Ок"
+        else
+            echo "Ошибка"
+    fi
