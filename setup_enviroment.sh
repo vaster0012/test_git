@@ -5,24 +5,27 @@ set -euo pipefail
 RED=$'\e[31m'   # Красный цвет текста
 GRN=$'\e[32m'   # Зелёный цвет текста
 YEL=$'\e[33m'   # Жёлтый цвет текста
+BLU=$'\e[34m'   # Жёлтый цвет текста
 EC=$'\e[0m'    # Сброс цвета
 
 # Оформление начала строк
-ST="${YEL}ENV║   ║${EC}" # Обычный ход программы
-EST="${RED}ENV║ E |${EC}" # Ошибка или предупреждение
+ST="${YEL}ENV║ ⇓ ⇓ ║${EC}" # Обычный ход программы
+EST="${RED}ENV║ ⇓ E ║${EC}" # Ошибка или предупреждение
+HST="${BLU}ENV║ ⇓ H ║${EC}" # Ошибка или предупреждение
 
+printf '%s\n' "${YEL}"
+printf '%s\n' "╔═════════════════════════════════════════════════════╗"
+printf '%s\n' "║             Setup bootstrap Vaster                  ║"
+printf '%s\n' "║   Updating and installing customized packages       ║"
+printf '%s\n' "╚══╗ ⇓ ⇓ ╔════════════════════════════════════════════╝"
+printf '%s' "${EC}"
 #Проверка запуска от root
 if [[ $EUID -eq 0 ]]; then
-    printf '%s\n' "${ST} ${GRN}$(whoami)${EC} is running as root"
+    printf '%s\n' "${ST} Is running as ${GRN}$(whoami)${EC}"
 else
     printf '%s\n' "${EST} ${RED} Launched from a regular user. Use sudo ${EC}"
     exit 1
 fi
-
-printf '%s\n' "${YEL}╔═════════════════════════════════════════════════════╗"
-printf '%s\n' "║             Setup bootstrap Vaster                  ║"
-printf '%s\n' "║   Updating and installing customized packages       ║"
-printf '%s\n' "╚══╗   ╔══════════════════════════════════════════════╝${EC}"
 
 printf '%s\n' "${ST} A temporary file has been created"
 dpkg-query -W -f='${Package}\n' > allinst.tmp
@@ -36,6 +39,25 @@ fi
 
 curl -s -L -o ./packages.txt "https://raw.githubusercontent.com/vaster0012/test_git/refs/heads/main/packages.txt"
 
+cleanup() {
+    local exit_code=$?
+    rm -f allinst.tmp
+    if [[ $exit_code -eq 0 ]]
+        then
+            printf '%s' "${YEL}"   # Все закончилось збс
+            printf '%s\n' "ENV║ ⇓ ⇓ ╚════════════════════════════════╗ "
+            printf '%s\n' "ENV║                                   OK ║ "
+            printf '%s\n' "ENV╚══════════════════════════════════════╝ " 
+            printf '%s' "${EC}"  
+        else
+            printf '%s' "${YEL}"   # Все закончилось плохо
+            printf '%s\n' "ENV║ ⇓ ⇓ ╚════════════════════════════════╗ "
+            printf '%s\n' "ENV║                                  BAD ║ "
+            printf '%s\n' "ENV╚══════════════════════════════════════╝ " 
+            printf '%s' "${EC}"  
+    fi
+}
+
 check_all_installed () {
     printf '%s\n' "${ST} reconciliation of installed packages"
     
@@ -44,13 +66,13 @@ check_all_installed () {
 }
 
 help_page () {
-    printf '%s\n' "${ST}  Скрипт позволяет установить окружение "
-    printf '%s\n' "${ST}  В будущем бдует более гибким. Флаги: "
-    printf '%s\n' "${ST}  -h --- Помощь "
-    printf '%s\n' "${ST}  -a --- Вывести преднастроенный список и выделить уже установленные "
-    printf '%s\n' "${ST}  -u --- Обновить только установленные "
-    printf '%s\n' "${EST}  Просьба использовать только один флаг "
-    printf '%s\n' "${ST}  Это все тесты, если вдруг кто-то это увидит, простите, что увидели! (С)Vaster "
+    printf '%s\n' "${HST}     Скрипт позволяет установить окружение "
+    printf '%s\n' "${HST}     В будущем бдует более гибким. Флаги: "
+    printf '%s\n' "${HST}     -h --- Помощь "
+    printf '%s\n' "${HST}     -a --- Вывести преднастроенный список и выделить уже установленные "
+    printf '%s\n' "${HST}     -u --- Обновить только установленные "
+    printf '%s\n' "${HST}     Просьба использовать только один флаг "
+    printf '%s\n' "${HST}     Это все тесты, если вдруг кто-то это увидит, простите, что увидели! (С)Vaster "
 
 }
 
@@ -79,7 +101,5 @@ esac
 
 shift $((OPTIND - 1))
 
-trap 'rm -f allinst.tmp' ERR
+trap cleanup EXIT
 rm -f allinst.tmp
-
-printf "\n"
