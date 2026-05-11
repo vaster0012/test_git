@@ -2,5 +2,7 @@ backup/
 *.log
 *.txt 
 *.tmp
+*.test
+test.*
 !packages.txt
 !note.txt

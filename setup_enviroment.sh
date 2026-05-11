@@ -12,13 +12,15 @@ EC=$'\e[0m'    # Сброс цвета
 ST="${YEL}ENV║ ⇓ ⇓ ║${EC}" # Обычный ход программы
 EST="${RED}ENV║ ⇓ E ║${EC}" # Ошибка или предупреждение
 HST="${BLU}ENV║ ⇓ H ║${EC}" # Информационнное сообщение
+GST="${GRN}ENV║ O K ║${EC}" # Подтвержение
 
 printf '%s\n' "${YEL}"
 printf '%s\n' "╔═════════════════════════════════════════════════════╗"
-printf '%s\n' "║             Setup bootstrap Vaster                  ║"
-printf '%s\n' "║   Updating and installing customized packages       ║"
+printf '%s\n' "║       Setup bootstrap Vaster                        ║"
+printf '%s\n' "║         Updating and installing customized packages ║"
 printf '%s\n' "╚══╗ ⇓ ⇓ ╔════════════════════════════════════════════╝"
 printf '%s' "${EC}"
+
 #Проверка запуска от root
 if [[ $EUID -eq 0 ]]; then
     printf '%s\n' "${ST} Is running as ${GRN}$(whoami)${EC}"
@@ -27,19 +29,26 @@ else
     exit 1
 fi
 
-printf '%s\n' "${ST} A temporary file has been created"
-dpkg-query -W -f='${Package}\n' > allinst.tmp
-
 if [[ -s ./packages.txt ]]
     then
         printf '%s\n' "${ST} ${YEL}packages.txt${EC} exists, overwriting..."
     else
         printf '%s\n' "${ST} ${YEL}packages.txt${EC} not found, downloading..."
 fi
-
 curl -s -L -o ./packages.txt "https://raw.githubusercontent.com/vaster0012/test_git/refs/heads/main/packages.txt"
 
-cleanup() {
+
+info_bar () {
+    local MESG=$1
+    printf '%s' "${YEL}"   # Авто построение бара
+            printf '%s\n' "ENV║ ⇓ ⇓ ╚════════════════════════════════╗ "
+            printf '%s\n' "ENV║               $MESG  "
+            printf '%s\n' "ENV║ ⇓ ⇓ ╔════════════════════════════════╝ " 
+            printf '%s' "${EC}"  
+}
+
+
+cleanup() { # обработка trap
     local exit_code=$?
     rm -f allinst.tmp
     if [[ $exit_code -eq 0 ]]
@@ -58,14 +67,7 @@ cleanup() {
     fi
 }
 
-check_all_installed () {
-    printf '%s\n' "${ST} reconciliation of installed packages"
-    
-
-
-}
-
-help_page () {
+help_page () {  #Страница помощи
     printf '%s\n' "${HST}     Скрипт позволяет установить окружение "
     printf '%s\n' "${HST}     В будущем бдует более гибким. Флаги: "
     printf '%s\n' "${HST}     -h --- Помощь "
@@ -73,6 +75,34 @@ help_page () {
     printf '%s\n' "${HST}     -u --- Обновить только установленные "
     printf '%s\n' "${HST}     Просьба использовать только один флаг "
     printf '%s\n' "${HST}     Это все тесты, если вдруг кто-то это увидит, простите, что увидели! (С)Vaster "
+
+}
+
+printf '%s\n' "${ST} A temporary file has been created"
+dpkg-query -W -f='${Package}\n' > allinst.tmp
+
+check_all_installed () { # только провека установлено ли что-то из списка # в работе
+    info_bar "CHECK INSTALLED APT"
+    printf '%s\n' "${ST} reconciliation of installed packages"
+
+    printf '%s\n' "${ST} Update..."
+    printf '%s\n' "${ST}   ...Please wait"
+    #apt-get update &>/dev/null
+
+    while IFS= read -r number
+    do
+        if grep -qxF "$number" "./allinst.tmp"
+        then 
+            printf '%s\n' "${GST} $number installed!"
+        else 
+             printf '%s\n' "${EST}${RED} $number not install!${EC}"
+        fi
+    done < <(grep -v '^ *#' "./packages.txt")
+}
+
+installation () { # в работе. Установка требуемых пакетов
+    printf '%s\n' "${ST} in work"
+    
 
 }
 
@@ -102,4 +132,3 @@ esac
 shift $((OPTIND - 1))
 
 trap cleanup EXIT
-rm -f allinst.tmp
