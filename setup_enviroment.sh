@@ -37,7 +37,6 @@ if [[ -s ./packages.txt ]]
 fi
 curl -s -L -o ./packages.txt "https://raw.githubusercontent.com/vaster0012/test_git/refs/heads/main/packages.txt"
 
-
 info_bar () {
     local MESG=$1
     printf '%s' "${YEL}"   # Авто построение бара
@@ -46,7 +45,6 @@ info_bar () {
             printf '%s\n' "ENV║ ⇓ ⇓ ╔════════════════════════════════╝ " 
             printf '%s' "${EC}"  
 }
-
 
 cleanup() { # обработка trap
     local exit_code=$?
@@ -105,9 +103,30 @@ installation () { # в работе. Установка требуемых па�
     
 
 }
+check_box () {
+    export TERM=xterm
+    export NEWT_COLORS='
+    root=white,black
+    window=white,black
+    border=yellow,black
+    button=yellow,yellow
+    title=yellow,black'
 
+    whiptail --topleft --title "Updating and installing customized packages" \
+        --menu "SELECT NEXT STEP TO Setup bootstrap Vaster" 14 48 3 \
+    "1" "FULL INSTALL" \
+    "2" "ONLY PACKAGES" \
+    "3" "HELP" 2> /tmp/ans
+    case $(cat /tmp/ans) in
+        1) info_bar "SELECTED FULL INSTALL" ;;
+        2) info_bar "SELECTED ONLY PACKAGES" ;;
+        3) info_bar "SELECTED HELP" 
+            help_page;;
+    esac
+}
+check_box
 FLAG=""
-while getopts "hau" opt; do
+while getopts "has" opt; do
     if [[ -n "$FLAG" ]]; then
         printf "${EST}Error: flag -%s conflicts with already used -%s\n" "$opt" "$FLAG"
         exit 1
@@ -115,10 +134,9 @@ while getopts "hau" opt; do
     case "$opt" in
         h) FLAG="h" ;;
         a) FLAG="a" ;;
-        u) FLAG="u" ;;
+        s) FLAG="u" ;;
         *) printf '%s\n' "${EST}Unsupported key. Open help"
            help_page
-           rm -f allinst.tmp
            exit 1 ;;
     esac
 done
@@ -126,7 +144,8 @@ done
 case "$FLAG" in
     h) help_page ;;
     a) check_all_installed ;;
-    u) printf '%s\n' "${EST}not ready ...." ;;
+    s)  check_box
+        printf '%s\n' "${EST}not ready ...." ;;
 esac
 
 shift $((OPTIND - 1))
