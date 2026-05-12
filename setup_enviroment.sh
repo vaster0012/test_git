@@ -37,11 +37,11 @@ if [[ -s ./packages.txt ]]
 fi
 curl -s -L -o ./packages.txt "https://raw.githubusercontent.com/vaster0012/test_git/refs/heads/main/packages.txt"
 
-info_bar () {
+title_bar () {
     local MESG=$1
     printf '%s' "${YEL}"   # Авто построение бара
             printf '%s\n' "ENV║ ⇓ ⇓ ╚════════════════════════════════╗ "
-            printf '%s\n' "ENV║               $MESG  "
+            printf '%s\n' "ENV║          $MESG  "
             printf '%s\n' "ENV║ ⇓ ⇓ ╔════════════════════════════════╝ " 
             printf '%s' "${EC}"  
 }
@@ -80,7 +80,7 @@ printf '%s\n' "${ST} A temporary file has been created"
 dpkg-query -W -f='${Package}\n' > allinst.tmp
 
 check_all_installed () { # только провека установлено ли что-то из списка # в работе
-    info_bar "CHECK INSTALLED APT"
+    title_bar "CHECK INSTALLED APT"
     printf '%s\n' "${ST} reconciliation of installed packages"
 
     printf '%s\n' "${ST} Update..."
@@ -96,14 +96,41 @@ check_all_installed () { # только провека установлено л
              printf '%s\n' "${EST}${RED} $number not install!${EC}"
         fi
     done < <(grep -v '^ *#' "./packages.txt")
-}
+}   
 
 installation () { # в работе. Установка требуемых пакетов
-    printf '%s\n' "${ST} in work"
-    
+    title_bar "FULL INSTALL"
+     printf '%s\n' "${ST}➤   The full installation of packages begins: "
+     printf '%s\n' "${ST}"
+     printf '%s\n' "${ST}➤   List ./packages.txt "
+     printf '%s\n' "${ST}➤   ZSH shell and its settings "
+     printf '%s\n' "${ST}➤   GIT repository (IN WORK) "
+
+    while IFS= read -r PACKAGE
+    do
+        if grep -qxF "$PACKAGE" "./allinst.tmp"
+        then 
+            printf '%s\n' "${GST} $PACKAGE installed!"
+        else 
+            sudo DEBIAN_FRONTEND=noninteractive apt install -y \
+                        -o Dpkg::Options::="--force-confdef" \
+                        -o Dpkg::Options::="--force-confold" \
+                        пакет > /dev/null 2>&1
+            title_bar "INSTALL $PACKAGE"
+            printf '%s\n' "${ST} Installing ${YEL}$PACKAGE${EC}"
+            printf '%s\n' "${ST} Please wait!"
+
+        fi
+    done < <(grep -v '^ *#' "./packages.txt")
+}
+
+git_env_intallation () {
+    printf '%s\n' "${ST} IN PROGRES...."
 
 }
-check_box () {
+
+
+check_box_title () {
     export TERM=xterm
     export NEWT_COLORS='
     root=white,black
@@ -116,15 +143,29 @@ check_box () {
         --menu "SELECT NEXT STEP TO Setup bootstrap Vaster" 14 48 3 \
     "1" "FULL INSTALL" \
     "2" "ONLY PACKAGES" \
-    "3" "HELP" 2> /tmp/ans
+    "3" "MORE OPTION" 2> /tmp/ans
     case $(cat /tmp/ans) in
-        1) info_bar "SELECTED FULL INSTALL" ;;
-        2) info_bar "SELECTED ONLY PACKAGES" ;;
-        3) info_bar "SELECTED HELP" 
-            help_page;;
+        1) title_bar "SELECTED FULL INSTALL"
+            installation ;;
+        2) title_bar "SELECTED ONLY PACKAGES" ;;
+        3) title_bar "MORE OPTION" 
+            check_box_more;;
     esac
 }
-check_box
+check_box_more () {
+ whiptail --topleft --title "Updating and installing customized packages" \
+        --menu "More option" 14 48 3 \
+    "1" "CHECK INSTALLED APT" \
+    "2" "INSTALL ONLY ZSH" \
+    "3" "TEST3" 2> /tmp/ans
+    case $(cat /tmp/ans) in
+        1) check_all_installed ;;
+        2) title_bar "INSTALL ONLY ZSH"
+        sh -c "$(curl -sSL https://github.com/vaster0012/first-config-zsh/raw/refs/heads/main/stab/stableinst.sh)" ;;
+        3) title_bar "TEST3" ;;
+    esac
+}
+check_box_title
 FLAG=""
 while getopts "has" opt; do
     if [[ -n "$FLAG" ]]; then
@@ -144,7 +185,7 @@ done
 case "$FLAG" in
     h) help_page ;;
     a) check_all_installed ;;
-    s)  check_box
+    s)  check_box_title
         printf '%s\n' "${EST}not ready ...." ;;
 esac
 
