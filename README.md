@@ -1,0 +1,3 @@
+curl -sSL https://raw.githubusercontent.com/vaster0012/test_git/main/env_setup.sh | sudo bash #SETUP ENV
+
+In work...
