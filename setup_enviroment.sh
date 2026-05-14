@@ -73,6 +73,7 @@ cleanup() { # обработка trap
             log "       "
     fi
 }
+trap cleanup EXIT
 
 help_page () {  #Страница помощи
     printf '%s\n' "${HST}     Скрипт позволяет установить окружение "
@@ -129,10 +130,10 @@ installation () { # в работе. Установка требуемых па�
         then 
             printf '%s\n' "${GST} $PACKAGE installed!"
         else 
-            sudo DEBIAN_FRONTEND=noninteractive apt install -y "$PACKAGE"\
+            sudo DEBIAN_FRONTEND=noninteractive apt install -y \
                         -o Dpkg::Options::="--force-confdef" \
                         -o Dpkg::Options::="--force-confold" \
-                        пакет > /dev/null 2>&1
+                        "$PACKAGE" > /dev/null 2>&1
             title_bar "INSTALL $PACKAGE"
             log "INST $PACKAGE"
             printf '%s\n' "${ST} Installing ${YEL}$PACKAGE${EC}"
@@ -149,8 +150,8 @@ install_zsh() {
 git_env_intallation () {
     printf '%s\n' "${ST} IN PROGRES...."
     mkdir projet && cd projet
-    git config -- global user.name "vaster0012"
-    git config -- global user.email "vaster0012@gmail.com"
+    git config --global user.name "vaster0012"
+    git config --global user.email "vaster0012@gmail.com"
     git clone git@github.com:vaster0012/test_git.git
     git fetch origin
     git pull origin main
@@ -180,7 +181,7 @@ check_box_title () {
         2) title_bar "SELECTED ONLY PACKAGES" ;;
         3) title_bar "MORE OPTION" 
             check_box_more;;
-        4) exit 1 ;;
+        4) exit 0 ;;
     esac
 }
 check_box_more () {
@@ -208,17 +209,17 @@ while getopts "has" opt; do
     case "$opt" in
         h) FLAG="h" ;;
         a) FLAG="a" ;;
-        s) FLAG="u" ;;
+        s) FLAG="s" ;;
         *) printf '%s\n' "${EST}Unsupported key. Open help"
            help_page
-           exit 1 ;;
+           exit 0 ;;
     esac
 done
 
 case "$FLAG" in
     h) help_page ;;
     a) check_all_installed 
-        exit 1;;
+        exit 0;;
     s)  check_box_title
         printf '%s\n' "${EST}not ready ...." ;;
 esac
@@ -226,4 +227,3 @@ esac
 shift $((OPTIND - 1))
 check_box_title
 log "EXIT WHITOUT TRAP"
-trap cleanup EXIT
