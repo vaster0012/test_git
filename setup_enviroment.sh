@@ -130,7 +130,7 @@ installation () { # в работе. Установка требуемых па�
         then 
             printf '%s\n' "${GST} $PACKAGE installed!"
         else 
-            sudo DEBIAN_FRONTEND=noninteractive apt install -y \
+            DEBIAN_FRONTEND=noninteractive apt install -y \
                         -o Dpkg::Options::="--force-confdef" \
                         -o Dpkg::Options::="--force-confold" \
                         "$PACKAGE" > /dev/null 2>&1
