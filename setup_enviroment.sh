@@ -144,7 +144,7 @@ installation () { # в работе. Установка требуемых па�
 }
 
 install_zsh() { 
-    sh -c "$(curl -sSL https://github.com/vaster0012/first-config-zsh/raw/refs/heads/main/stab/stableinst.sh)"
+    sh -c "$(curl -sSL https://github.com/vaster0012/test_git/blob/main/Test_scrp1/stableinst.sh)"
     }
 
 git_env_intallation () {
